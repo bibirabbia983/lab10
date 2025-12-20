@@ -1,1 +1,2 @@
-MONGO_URI=mongodb+srv://rabbiarehman849_db_use:Rabbia123@cluster0.vr98drn.mongodb.net/lab19
+MONGO_URI=mongodb+srv://rabbiarehman849_db_use:Rabbia123@cluster0.vr98drn.mongodb.net/lab19?retryWrites=true&w=majority
+PORT=3000
