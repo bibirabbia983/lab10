@@ -1,59 +1,98 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// middlewares
-app.use(cors());
+// Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI)
+// MongoDB Connection
+mongoose
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
 
-// Schema
-const personSchema = new mongoose.Schema({
+// Schema & Model
+const userSchema = new mongoose.Schema({
   name: String,
   email: String,
-  age: Number,
-  sem: Number
+  age: Number
 });
 
-// Model
-const Person = mongoose.model("Person", personSchema);
+const User = mongoose.model("User", userSchema);
 
-// Test route
+// =====================
+// ROUTES
+// =====================
+
+// STEP 3.2 REQUIRED ROUTE
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.send("Node API is running successfully");
 });
 
-// GET all persons
+// GET all users
 app.get("/users", async (req, res) => {
   try {
-    const users = await Person.find();
+    const users = await User.find();
     res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
-// POST new person
+// GET single user
+app.get("/user/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST user
 app.post("/user", async (req, res) => {
   try {
-    const user = await Person.create(req.body);
+    const user = await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      age: req.body.age
+    });
     res.status(201).json(user);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
-// Server start
+// PUT user
+app.put("/user/:id", async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// DELETE user
+app.delete("/user/:id", async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =====================
+// SERVER
+// =====================
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
