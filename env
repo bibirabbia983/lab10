@@ -1,2 +1,1 @@
-MONGODB_URI=mongodb+srv://username:password@clustername.mongodb.net/databasename?retryWrites=true&w=majority
-PORT=3000
+MONGODB_URI=mongodb+srv://rabbiarehman849_db_use:YOUR_PASSWORD@cluster0.vr98drn.mongodb.net/lab19?retryWrites=true&w=majority
